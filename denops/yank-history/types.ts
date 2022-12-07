@@ -6,11 +6,13 @@ export const PLUGIN_AUTOLOAD_NS = "yank_history";
 
 // ===== RegType
 
+// deno-lint-ignore no-control-regex
+const REGTYPE_REGEX = /^(|[vV]|\x16[0-9]+)$/;
+
 export type RegType = "" | "v" | "V" | `\x16${number}`;
 
 export function isRegType(obj: unknown): obj is RegType {
-  // deno-lint-ignore no-control-regex
-  return typeof obj === "string" && /^(|[vV]|\x16[0-9]+)$/.test(obj);
+  return typeof obj === "string" && REGTYPE_REGEX.test(obj);
 }
 
 // ===== RegInfo
