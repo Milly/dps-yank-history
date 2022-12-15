@@ -1,11 +1,13 @@
-import { abortablePromise, fn } from "../yank-history/deps.ts";
+import type {
+  GatherArguments,
+} from "https://deno.land/x/ddu_vim@v2.0.0/base/source.ts";
 import {
   ActionFlags,
-  Actions,
+  type Actions,
   BaseSource,
-  GatherArguments,
-  Item,
-} from "../yank-history/deps_ddu.ts";
+  type Item,
+} from "https://deno.land/x/ddu_vim@v2.0.0/types.ts";
+import { abortablePromise, fn } from "../yank-history/deps.ts";
 import { YankHistoryItem } from "../yank-history/types.ts";
 import {
   regContentsToText,
