@@ -1,6 +1,12 @@
+import type { Denops } from "https://deno.land/x/denops_std@v5.0.1/mod.ts";
+import * as autocmd from "https://deno.land/x/denops_std@v5.0.1/autocmd/mod.ts";
+import {
+  assert,
+  is,
+  maybe,
+} from "https://deno.land/x/unknownutil@v3.2.0/mod.ts";
 import { YankHistoryController } from "./controller.ts";
-import { assertArray, autocmd, Denops, isNumber, maybeNumber } from "./deps.ts";
-import { assertYankEvent, PLUGIN_AUGROUP } from "./types.ts";
+import { isYankEvent, PLUGIN_AUGROUP } from "./types.ts";
 
 export async function main(denops: Denops) {
   const controller = await YankHistoryController.create(denops);
@@ -10,15 +16,15 @@ export async function main(denops: Denops) {
       return controller.updateOptions();
     },
     get(count: unknown) {
-      return controller.get(maybeNumber(count));
+      return controller.get(maybe(count, is.Number));
     },
     delete(ids: unknown) {
-      assertArray(ids, isNumber);
+      assert(ids, is.ArrayOf(is.Number));
       controller.delete(ids);
       return Promise.resolve();
     },
     onTextYankPost(event: unknown) {
-      assertYankEvent(event);
+      assert(event, isYankEvent);
       controller.onTextYankPost(event);
       return Promise.resolve();
     },

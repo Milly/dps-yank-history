@@ -1,5 +1,9 @@
+import { defer } from "https://deno.land/x/denops_defer@v1.0.0/batch/defer.ts";
+import type { Denops } from "https://deno.land/x/denops_std@v5.0.1/mod.ts";
+import * as fn from "https://deno.land/x/denops_std@v5.0.1/function/mod.ts";
+import * as vars from "https://deno.land/x/denops_std@v5.0.1/variable/mod.ts";
+import { is } from "https://deno.land/x/unknownutil@v3.2.0/mod.ts";
 import { DBOptions, YankHistoryDatabase } from "./db.ts";
-import { defer, Denops, fn, isLike, vars } from "./deps.ts";
 import { PLUGIN_AUTOLOAD_NS, YankEvent, YankHistoryItem } from "./types.ts";
 import { regContentsToText } from "./util.ts";
 
@@ -16,24 +20,28 @@ export class YankHistoryController {
 
   static getOptions(denops: Denops): Promise<Options> {
     return defer(denops, (helper) => {
-      async function get<D, R>(name: string, def: D, ref: R): Promise<D | R> {
+      async function get<D, R>(
+        name: string,
+        def: D,
+        pred: (value: unknown) => value is R,
+      ): Promise<D | R> {
         const varName = `${PLUGIN_AUTOLOAD_NS}#${name}`;
         const value = await vars.globals.get(helper, varName, def);
-        return isLike(ref ?? def, value) ? value : def;
+        return pred(value) ? value : def;
       }
       function toAbsolutePath(path: string) {
         return fn.fnamemodify(helper, path, ":p") as Promise<string>;
       }
       return {
-        minLength: get("min_length", 2, 0),
+        minLength: get("min_length", 2, is.Number),
         db: {
-          path: get("persist_path", undefined, "").then(
+          path: get("persist_path", undefined, is.String).then(
             (path) => path ? toAbsolutePath(path) : undefined,
           ),
-          updateDuration: get("update_duration", undefined, 0),
-          mtimeMargin: get("mtime_margin", undefined, 0),
-          maxItems: get("max_items", undefined, 0),
-          truncateThreshold: get("truncate_threshold", undefined, 0),
+          updateDuration: get("update_duration", undefined, is.Number),
+          mtimeMargin: get("mtime_margin", undefined, is.Number),
+          maxItems: get("max_items", undefined, is.Number),
+          truncateThreshold: get("truncate_threshold", undefined, is.Number),
         },
       };
     });

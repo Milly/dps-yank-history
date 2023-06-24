@@ -1,4 +1,7 @@
-import { AssertError, isArray, isLike, isString } from "./deps.ts";
+import {
+  is,
+  type ObjectOf,
+} from "https://deno.land/x/unknownutil@v3.2.0/mod.ts";
 
 export const PLUGIN_NAME = "yank-history";
 export const PLUGIN_AUGROUP = `${PLUGIN_NAME}-internal` as const;
@@ -12,7 +15,7 @@ const REGTYPE_REGEX = /^(|[vV]|\x16[0-9]+)$/;
 export type RegType = "" | "v" | "V" | `\x16${number}`;
 
 export function isRegType(obj: unknown): obj is RegType {
-  return typeof obj === "string" && REGTYPE_REGEX.test(obj);
+  return is.String(obj) && REGTYPE_REGEX.test(obj);
 }
 
 // ===== RegInfo
@@ -25,28 +28,18 @@ export type RegInfo = {
 
 // ===== YankEvent
 
-const YankEventRef = {
-  inclusive: true,
-  operator: "y",
-  regcontents: [] as string[],
-  regname: "a",
-  regtype: "v" as RegType,
-  visual: true,
+const predYankEvent = {
+  inclusive: is.Boolean,
+  operator: is.String,
+  regcontents: is.ArrayOf(is.String),
+  regname: is.String,
+  regtype: isRegType,
+  visual: is.Boolean,
 };
 
-export type YankEvent = typeof YankEventRef;
+export type YankEvent = ObjectOf<typeof predYankEvent>;
 
-export function isYankEvent(obj: unknown): obj is YankEvent {
-  return isLike(YankEventRef, obj) &&
-    isArray(obj.regcontents, isString) &&
-    isRegType(obj.regtype);
-}
-
-export function assertYankEvent(obj: unknown): asserts obj is YankEvent {
-  if (!isYankEvent(obj)) {
-    throw new AssertError("The value must be YankEvent");
-  }
-}
+export const isYankEvent = is.ObjectOf(predYankEvent);
 
 // ===== YankHistoryItem
 

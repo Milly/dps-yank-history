@@ -1,12 +1,7 @@
-import {
-  assertArray,
-  debounce,
-  dirname,
-  isArray,
-  isNumber,
-  isString,
-  Lock,
-} from "./deps.ts";
+import { debounce } from "https://deno.land/std@0.192.0/async/mod.ts";
+import { dirname } from "https://deno.land/std@0.192.0/path/mod.ts";
+import { Lock } from "https://deno.land/x/async@v2.0.2/mod.ts";
+import { assert, is } from "https://deno.land/x/unknownutil@v3.2.0/mod.ts";
 import { isRegType, RegInfo, RegType, YankHistoryItem } from "./types.ts";
 
 export type DBOptions = {
@@ -33,7 +28,7 @@ export class YankHistoryDatabase {
   #lastLoadedSize = 0;
   #nextSaveIndex = 0;
   #truncateRequired = false;
-  #lock = new Lock();
+  #lock = new Lock(undefined);
   #debounceUpdate = () => {};
 
   constructor(options: Readonly<DBOptions> = {}) {
@@ -89,7 +84,7 @@ export class YankHistoryDatabase {
   }
 
   async #update(): Promise<void> {
-    await this.#lock.with(async () => {
+    await this.#lock.lock(async () => {
       const { path } = this.#options;
       if (!path) {
         this.#gc();
@@ -165,7 +160,7 @@ export class YankHistoryDatabase {
 
     // Parse JSON text
     const items = JSON.parse(`[${rows}]`);
-    assertArray(items, isHistoryItem);
+    assert(items, is.ArrayOf(isHistoryItem));
     return items;
   }
 
@@ -253,11 +248,11 @@ const HistoryItemField = {
 } as const;
 
 function isHistoryItem(obj: unknown): obj is Item {
-  return isArray(obj) && obj.length === 4 &&
-    isNumber(obj[HistoryItemField.time]) &&
-    isString(obj[HistoryItemField.regname]) &&
+  return is.Array(obj) && obj.length === 4 &&
+    is.Number(obj[HistoryItemField.time]) &&
+    is.String(obj[HistoryItemField.regname]) &&
     isRegType(obj[HistoryItemField.regtype]) &&
-    isArray(obj[HistoryItemField.regcontents], isString);
+    is.ArrayOf(is.String)(obj[HistoryItemField.regcontents]);
 }
 
 function asYankHistoryItem([id, item]: [number, Item]): YankHistoryItem {
