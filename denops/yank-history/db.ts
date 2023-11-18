@@ -1,7 +1,7 @@
-import { debounce } from "https://deno.land/std@0.192.0/async/mod.ts";
-import { dirname } from "https://deno.land/std@0.192.0/path/mod.ts";
+import { debounce } from "https://deno.land/std@0.206.0/async/mod.ts";
+import { dirname } from "https://deno.land/std@0.206.0/path/mod.ts";
 import { Lock } from "https://deno.land/x/async@v2.0.2/mod.ts";
-import { assert, is } from "https://deno.land/x/unknownutil@v3.2.0/mod.ts";
+import { assert, is } from "https://deno.land/x/unknownutil@v3.10.0/mod.ts";
 import { isRegType, RegInfo, RegType, YankHistoryItem } from "./types.ts";
 
 export type DBOptions = {

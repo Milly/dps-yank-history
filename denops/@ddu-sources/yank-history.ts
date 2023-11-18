@@ -1,14 +1,14 @@
-import { abortablePromise } from "https://deno.land/std@0.192.0/async/mod.ts";
+import { abortablePromise } from "https://deno.land/std@0.206.0/async/mod.ts";
 import type {
   GatherArguments,
-} from "https://deno.land/x/ddu_vim@v3.2.7/base/source.ts";
+} from "https://deno.land/x/ddu_vim@v3.6.0/base/source.ts";
 import {
   ActionFlags,
   type Actions,
   BaseSource,
   type Item,
-} from "https://deno.land/x/ddu_vim@v3.2.7/types.ts";
-import * as fn from "https://deno.land/x/denops_std@v5.0.1/function/mod.ts";
+} from "https://deno.land/x/ddu_vim@v3.6.0/types.ts";
+import * as fn from "https://deno.land/x/denops_std@v5.0.2/function/mod.ts";
 import { YankHistoryItem } from "../yank-history/types.ts";
 import {
   regContentsToText,
