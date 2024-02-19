@@ -153,15 +153,20 @@ export class YankHistoryDatabase {
     end: number,
   ): Promise<Item[]> {
     // Read text from file
-    await file.seek(start, Deno.SeekMode.Start);
     const buf = new Uint8Array(end - start);
-    file.read(buf);
-    const rows = new TextDecoder().decode(buf).trimEnd().replaceAll("\n", ",");
+    await file.seek(start, Deno.SeekMode.Start);
+    await file.read(buf);
+    const rows = new TextDecoder().decode(buf).trimEnd();
+    const json = `[${rows.replaceAll("\n", ",")}]`;
 
     // Parse JSON text
-    const items = JSON.parse(`[${rows}]`);
-    assert(items, is.ArrayOf(isHistoryItem));
-    return items;
+    try {
+      const items = JSON.parse(json);
+      assert(items, is.ArrayOf(isHistoryItem));
+      return items;
+    } catch (e) {
+      throw new Error(`Can not parse in (${this.#options.path}) at [${start}-${end}] bytes`, { cause: e });
+    }
   }
 
   async #save(file: Deno.FsFile): Promise<void> {
