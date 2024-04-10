@@ -165,7 +165,10 @@ export class YankHistoryDatabase {
       assert(items, is.ArrayOf(isHistoryItem));
       return items;
     } catch (e) {
-      throw new Error(`Can not parse in (${this.#options.path}) at [${start}-${end}] bytes`, { cause: e });
+      throw new Error(
+        `Can not parse in (${this.#options.path}) at [${start}-${end}] bytes`,
+        { cause: e },
+      );
     }
   }
 
