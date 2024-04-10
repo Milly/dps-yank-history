@@ -1,7 +1,7 @@
 import {
   is,
   type ObjectOf,
-} from "https://deno.land/x/unknownutil@v3.10.0/mod.ts";
+} from "https://deno.land/x/unknownutil@v3.17.2/mod.ts";
 
 export const PLUGIN_NAME = "yank-history";
 export const PLUGIN_AUGROUP = `${PLUGIN_NAME}-internal` as const;
