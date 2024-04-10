@@ -1,7 +1,7 @@
 import {
   is,
-  type ObjectOf,
-} from "https://deno.land/x/unknownutil@v3.17.2/mod.ts";
+  type PredicateType,
+} from "https://deno.land/x/unknownutil@v3.17.2/is.ts";
 
 export const PLUGIN_NAME = "yank-history";
 export const PLUGIN_AUGROUP = `${PLUGIN_NAME}-internal` as const;
@@ -37,7 +37,7 @@ const predYankEvent = {
   visual: is.Boolean,
 };
 
-export type YankEvent = ObjectOf<typeof predYankEvent>;
+export type YankEvent = PredicateType<typeof isYankEvent>;
 
 export const isYankEvent = is.ObjectOf(predYankEvent);
 
