@@ -1,0 +1,124 @@
+*yank-history.txt*	Vim denops plugin for persistent yank history
+
+Author: Milly
+License: MIT license
+
+CONTENTS					*yank-history-contents*
+
+Introduction		|yank-history-introduction|
+Install			|yank-history-install|
+Examples		|yank-history-examples|
+Options			|yank-history-options|
+
+
+==============================================================================
+INTRODUCTION					*yank-history-introduction*
+
+Vim denops plugin for persistent yank history.
+
+This plugin does not provide its own UI. You will need one of the following to
+manipulate your history:
+
+	ddu.vim   - Display list of yank history.
+	          - Select and insert text from yank history.
+	          - Select and delete elements from yank history.
+
+	ddc.vim   - Insert matching text from yank history in insert mode.
+
+
+==============================================================================
+INSTALL						*yank-history-install*
+
+Requires "denops.vim" to be installed.
+
+https://github.com/vim-denops/denops.vim
+
+Optionally, install "ddu.vim" or "ddc.vim".
+
+https://github.com/Shougo/ddu.vim
+https://github.com/Shougo/ddc.vim
+
+
+==============================================================================
+EXAMPLES					*yank-history-examples*
+>
+	" Setup dps-yank-history
+	let yank_history#persist_path = expand('~/.cache/yank-history.jsonl')
+	let yank_history#min_length = 2
+	let yank_history#update_duration = 1000
+	let yank_history#mtime_margin = 200
+	let yank_history#max_items = 100
+	let yank_history#truncate_threshold = 0
+
+	" Setup ddu.vim
+	call ddu#custom#patch_global('sources', [
+	      \   {'name': 'yank-history'},
+	      \ ])
+	call ddu#custom#patch_global('sourceParams', #{
+	      \ yank-history: #{
+	      \   headerHlGroup: 'Special',
+	      \   prefix: 'Hist:',
+	      \ }})
+
+	" Setup ddc.vim
+	call ddc#custom#patch_global('sources', [
+	      \ 'yank-history',
+	      \])
+	call ddc#custom#patch_global('sourceParams', #{
+	      \ yank-history: #{
+	      \   maxAbbrWidth: 100,
+	      \   ctrlCharHlGroup: 'SpecialKey',
+	      \ }})
+<
+
+==============================================================================
+OPTIONS						*yank-history-options*
+
+			    		*yank-history-option-max_items*
+*g:yank_history#max_items*	(number)
+		The maximum number of histories to be saved. If the number of
+		histories exceeds |g:yank_history#truncate_threshold|, the
+		oldest ones will be deleted to reduce to this number.
+
+		Default: 100
+
+			    		*yank-history-option-min_length*
+*g:yank_history#min_length*	(number)
+		The minimum number of characters to save when yanked.
+
+		Default: 2
+
+			    		*yank-history-option-mtime_margin*
+*g:yank_history#mtime_margin*	(number)
+		The minimum number of milliseconds for a file update time to
+		determine whether a database file has been updated.
+		This is useful when the filesystem has timestamp errors.
+
+		Default: 200
+
+			    		*yank-history-option-persist_path*
+*g:yank_history#persist_path*	(string)
+		The path to the database file where yank history will be
+		stored. If it is a relative path, it is taken from the current
+		directory of Vim.
+		If empty, nothing will be saved.
+
+		Default: ""
+
+			    		*yank-history-option-truncate_threshold*
+*g:yank_history#truncate_threshold*	(number)
+		If the number of histories exceeds this, the oldest ones will
+		be truncated to reduce them to |g:yank_history#max_items|.
+
+		Default: |g:yank_history#max_items| + 20
+
+			    		*yank-history-option-update_duration*
+*g:yank_history#update_duration*	(number)
+		The number of milliseconds to wait before synchronizing the
+		database.
+
+		Default: 1000
+
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:fen:noet:

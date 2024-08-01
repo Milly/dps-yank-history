@@ -2,7 +2,7 @@
 
 [![license:MIT](https://img.shields.io/github/license/Milly/dps-yank-history?style=flat-square)](LICENSE)
 
-Vim denops plugin for persist yank history.
+Vim denops plugin for persistent yank history.
 
 ## Required
 
@@ -17,29 +17,28 @@ You will need one of the following to manipulate your history:
 - [ddc.vim](https://github.com/Shougo/ddc.vim)
   - Insert matching text from yank history in insert mode.
 
-
 ## Configuration
 
 ```vim
-" setup dps-yank-history
-let yank_history#persist_path = expand('~') .. '/.cache/yank-history.jsonl'
+" Setup dps-yank-history
+let yank_history#persist_path = expand('~/.cache/yank-history.jsonl')
 let yank_history#min_length = 2
 let yank_history#update_duration = 1000
 let yank_history#mtime_margin = 200
 let yank_history#max_items = 100
 let yank_history#truncate_threshold = 0
 
-" setup ddu.vim
+" Setup ddu.vim
 call ddu#custom#patch_global('sources', [
       \   {'name': 'yank-history'},
       \ ])
-call ddu#custom#patch_global('sourceParms', #{
+call ddu#custom#patch_global('sourceParams', #{
       \ yank-history: #{
       \   headerHlGroup: 'Special',
       \   prefix: 'Hist:',
       \ }})
 
-" setup ddc.vim
+" Setup ddc.vim
 call ddc#custom#patch_global('sources', [
       \ 'yank-history',
       \])
