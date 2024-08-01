@@ -1,7 +1,4 @@
-import {
-  is,
-  type PredicateType,
-} from "https://deno.land/x/unknownutil@v3.17.2/is.ts";
+import { is, type PredicateType } from "jsr:@core/unknownutil@^3.18.1";
 
 export const PLUGIN_NAME = "yank-history";
 export const PLUGIN_AUGROUP = `${PLUGIN_NAME}-internal` as const;

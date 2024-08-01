@@ -1,14 +1,14 @@
-import { abortablePromise } from "https://deno.land/std@0.221.0/async/mod.ts";
-import type {
-  GatherArguments,
-} from "https://deno.land/x/ddu_vim@v3.10.3/base/source.ts";
+import { abortable } from "jsr:@std/async@^1.0.1";
+import * as fn from "jsr:@denops/std@^7.0.0/function";
+import {
+  BaseSource,
+  type GatherArguments,
+} from "jsr:@shougo/ddu-vim@^5.0.0/source";
 import {
   ActionFlags,
   type Actions,
-  BaseSource,
   type Item,
-} from "https://deno.land/x/ddu_vim@v3.10.3/types.ts";
-import * as fn from "https://deno.land/x/denops_std@v6.4.0/function/mod.ts";
+} from "jsr:@shougo/ddu-vim@^5.0.0/types";
 import { YankHistoryItem } from "../yank-history/types.ts";
 import {
   regContentsToText,
@@ -62,7 +62,7 @@ export class Source extends BaseSource<Params> {
     return new ReadableStream({
       start: async (controller) => {
         try {
-          const items = await abortablePromise(
+          const items = await abortable(
             this.#generateItems(args),
             abortController.signal,
           );

@@ -1,8 +1,8 @@
-import { defer } from "https://deno.land/x/denops_defer@v1.0.0/batch/defer.ts";
-import type { Denops } from "https://deno.land/x/denops_std@v6.4.0/mod.ts";
-import * as fn from "https://deno.land/x/denops_std@v6.4.0/function/mod.ts";
-import * as vars from "https://deno.land/x/denops_std@v6.4.0/variable/mod.ts";
-import { is } from "https://deno.land/x/unknownutil@v3.17.2/is.ts";
+import type { Denops } from "jsr:@denops/std@^7.0.0";
+import * as fn from "jsr:@denops/std@^7.0.0/function";
+import * as vars from "jsr:@denops/std@^7.0.0/variable";
+import { is } from "jsr:@core/unknownutil@^3.18.1";
+import { accumulate } from "jsr:@milly/denops-batch-accumulate@^1.0.0";
 import { DBOptions, YankHistoryDatabase } from "./db.ts";
 import { PLUGIN_AUTOLOAD_NS, YankEvent, YankHistoryItem } from "./types.ts";
 import { regContentsToText } from "./util.ts";
@@ -18,8 +18,15 @@ export class YankHistoryController {
     return new YankHistoryController(denops, options);
   }
 
-  static getOptions(denops: Denops): Promise<Options> {
-    return defer(denops, (helper) => {
+  static async getOptions(denops: Denops): Promise<Options> {
+    const [
+      minLength,
+      path,
+      updateDuration,
+      mtimeMargin,
+      maxItems,
+      truncateThreshold,
+    ] = await accumulate(denops, (helper) => {
       async function get<D, R>(
         name: string,
         def: D,
@@ -32,19 +39,29 @@ export class YankHistoryController {
       function toAbsolutePath(path: string) {
         return fn.fnamemodify(helper, path, ":p") as Promise<string>;
       }
-      return {
-        minLength: get("min_length", 2, is.Number),
-        db: {
-          path: get("persist_path", undefined, is.String).then(
-            (path) => path ? toAbsolutePath(path) : undefined,
-          ),
-          updateDuration: get("update_duration", undefined, is.Number),
-          mtimeMargin: get("mtime_margin", undefined, is.Number),
-          maxItems: get("max_items", undefined, is.Number),
-          truncateThreshold: get("truncate_threshold", undefined, is.Number),
-        },
-      };
+      return Promise.all([
+        get("min_length", 2, is.Number),
+        (async () => {
+          const path = await get("persist_path", undefined, is.String);
+          return path ? await toAbsolutePath(path) : undefined;
+        })(),
+        get("update_duration", undefined, is.Number),
+        get("mtime_margin", undefined, is.Number),
+        get("max_items", undefined, is.Number),
+        get("truncate_threshold", undefined, is.Number),
+      ]);
     });
+
+    return {
+      minLength,
+      db: {
+        path,
+        updateDuration,
+        mtimeMargin,
+        maxItems,
+        truncateThreshold,
+      },
+    };
   }
 
   #denops: Denops;
