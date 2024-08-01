@@ -1,18 +1,16 @@
-import type {
-  GatherArguments,
-  OnCompleteDoneArguments,
-  OnInitArguments,
-} from "https://deno.land/x/ddc_vim@v4.3.1/base/source.ts";
-import {
-  BaseSource,
-  type Item as DdcItem,
-} from "https://deno.land/x/ddc_vim@v4.3.1/types.ts";
-import type { Denops } from "https://deno.land/x/denops_std@v6.4.0/mod.ts";
-import { globalOptions } from "https://deno.land/x/denops_std@v6.4.0/variable/option.ts";
+import type { Denops } from "jsr:@denops/std@^7.0.0";
+import { globalOptions } from "jsr:@denops/std@^7.0.0/variable";
 import {
   Unprintable,
   type UnprintableUserData,
-} from "https://deno.land/x/ddc_unprintable@v2.0.2/mod.ts";
+} from "jsr:@milly/ddc-unprintable@^4.0.0";
+import {
+  BaseSource,
+  type GatherArguments,
+  type OnCompleteDoneArguments,
+  type OnInitArguments,
+} from "jsr:@shougo/ddc-vim@^6.0.0/source";
+import type { Item as DdcItem } from "jsr:@shougo/ddc-vim@^6.0.0/types";
 import type { RegType, YankHistoryItem } from "../yank-history/types.ts";
 import { regContentsToText, toDuration } from "../yank-history/util.ts";
 
